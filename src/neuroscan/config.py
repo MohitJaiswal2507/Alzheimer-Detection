@@ -36,3 +36,4 @@ CLASS_DESCRIPTIONS = {
 # Configured LLM provider settings (Google Gemini)
 DEFAULT_LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower()
 DEFAULT_GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
+GEMINI_MODEL = DEFAULT_GEMINI_MODEL
