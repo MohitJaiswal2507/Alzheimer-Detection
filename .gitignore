@@ -218,3 +218,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# NeuroScan AI - Local datasets, models, artifacts, and vector store
+/data/
+/artifacts/
+/chroma_db/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*docs
