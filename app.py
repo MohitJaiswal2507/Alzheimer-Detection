@@ -58,7 +58,7 @@ st.set_page_config(
 st.markdown("""
 <style>
     /* Google Fonts: Plus Jakarta Sans & JetBrains Mono */
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
     html, body, [class*="css"], .stMarkdown, .stText {
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -66,40 +66,86 @@ st.markdown("""
     code, pre, .mono-text {
         font-family: 'JetBrains Mono', monospace !important;
     }
+    h1, h2, h3 {
+        text-wrap: balance;
+    }
+
+    /* Browser Surfaces: Selection, Scrollbars, Focus Rings, Tabular Numerals */
+    ::selection {
+        background: rgba(14, 165, 233, 0.28);
+        color: #f8fafc;
+    }
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #0b0f19;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #334155;
+    }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+        outline: 2px solid #38bdf8 !important;
+        outline-offset: 2px !important;
+    }
+    .metric-kpi-value, table td, table th, .prob-header span:last-child {
+        font-variant-numeric: tabular-nums;
+    }
 
     /* Global Container Adjustments */
     .block-container {
-        padding-top: 1.6rem !important;
+        padding-top: 2.6rem !important;
         padding-bottom: 3rem !important;
-        max-width: 1350px !important;
+        max-width: 1340px !important;
     }
 
-    /* Sidebar Background & Borders */
+    /* Sidebar Background, Borders & Radio Navigation */
     section[data-testid="stSidebar"] {
         background-color: #070b14 !important;
-        border-right: 1px solid rgba(30, 41, 59, 0.8) !important;
+        border-right: 1px solid rgba(148, 163, 184, 0.12) !important;
     }
     section[data-testid="stSidebar"] .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 1.4rem !important;
+    }
+    section[data-testid="stSidebar"] div[role="radiogroup"] label {
+        padding: 0.42rem 0.65rem !important;
+        border-radius: 8px !important;
+        margin-bottom: 0.2rem !important;
+        transition: background-color 0.18s ease !important;
+        white-space: nowrap !important;
+    }
+    section[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+        background: rgba(148, 163, 184, 0.08) !important;
+    }
+    section[data-testid="stSidebar"] div[role="radiogroup"] label p {
+        font-size: 0.88rem !important;
+        font-weight: 500 !important;
+        white-space: nowrap !important;
     }
 
-    /* Primary Action Button (Electric Cyan Gradient replacing harsh coral) */
+    /* Primary Action Button (Restrained Medical Cyan) */
     div.stButton > button[kind="primary"], div.stButton > button:first-child {
-        background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%) !important;
+        background: #0284c7 !important;
         color: #ffffff !important;
-        border: 1px solid rgba(56, 189, 248, 0.4) !important;
-        border-radius: 12px !important;
-        padding: 0.7rem 1.6rem !important;
-        font-weight: 700 !important;
-        font-size: 1rem !important;
-        letter-spacing: 0.02em !important;
-        box-shadow: 0 4px 20px rgba(6, 182, 212, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
-        transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1) !important;
+        border: 1px solid rgba(56, 189, 248, 0.45) !important;
+        border-radius: 10px !important;
+        padding: 0.65rem 1.4rem !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        letter-spacing: 0.01em !important;
+        box-shadow: 0 2px 10px rgba(2, 132, 199, 0.28) !important;
+        transition: background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease !important;
     }
     div.stButton > button[kind="primary"]:hover, div.stButton > button:first-child:hover {
-        transform: translateY(-2px) scale(1.008) !important;
-        box-shadow: 0 8px 28px rgba(6, 182, 212, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
-        border-color: rgba(56, 189, 248, 0.8) !important;
+        background: #0ea5e9 !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 18px rgba(14, 165, 233, 0.35) !important;
+        border-color: rgba(125, 211, 252, 0.7) !important;
     }
     div.stButton > button[kind="primary"]:active, div.stButton > button:first-child:active {
         transform: translateY(0px) scale(0.99) !important;
@@ -107,26 +153,30 @@ st.markdown("""
 
     /* Secondary / Preset Buttons */
     div.stButton > button[kind="secondary"] {
-        background: #0f172a !important;
+        background: #111827 !important;
         color: #e2e8f0 !important;
-        border: 1px solid #334155 !important;
-        border-radius: 10px !important;
-        font-weight: 600 !important;
-        font-size: 0.85rem !important;
-        transition: all 0.2s ease !important;
+        border: 1px solid rgba(148, 163, 184, 0.18) !important;
+        border-radius: 9px !important;
+        font-weight: 500 !important;
+        font-size: 0.82rem !important;
+        min-height: 40px !important;
+        white-space: nowrap !important;
+        transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease !important;
     }
     div.stButton > button[kind="secondary"]:hover {
         background: #1e293b !important;
-        border-color: #38bdf8 !important;
-        color: #38bdf8 !important;
-        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15) !important;
+        border-color: rgba(56, 189, 248, 0.55) !important;
+        color: #f8fafc !important;
+    }
+    div.stButton > button[kind="secondary"]:active {
+        transform: scale(0.985) !important;
     }
 
     /* File Uploader Container */
     div[data-testid="stFileUploader"] {
-        background: rgba(15, 23, 42, 0.6);
+        background: rgba(17, 24, 39, 0.7);
         border: 1px dashed rgba(56, 189, 248, 0.35);
-        border-radius: 14px;
+        border-radius: 12px;
         padding: 0.8rem;
         transition: border-color 0.2s ease;
     }
@@ -134,69 +184,40 @@ st.markdown("""
         border-color: rgba(56, 189, 248, 0.7);
     }
 
-    /* Double-Bezel Card Architecture */
+    /* Clean Single-Layer Surface Cards */
     .bezel-card {
-        background: #0f172a;
-        border: 1px solid rgba(51, 65, 85, 0.7);
-        border-radius: 16px;
-        padding: 1.3rem;
+        background: #111827;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 14px;
+        padding: 1.35rem;
         margin-bottom: 1.2rem;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05);
     }
     .bezel-card-highlight {
-        background: #0f172a;
-        border: 1px solid rgba(56, 189, 248, 0.3);
-        border-radius: 16px;
-        padding: 1.3rem;
+        background: #111827;
+        border: 1px solid rgba(56, 189, 248, 0.28);
+        border-radius: 14px;
+        padding: 1.35rem;
         margin-bottom: 1.2rem;
-        box-shadow: 0 10px 30px -5px rgba(6, 182, 212, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.08);
-    }
-
-    /* Eyebrow Pill Badge */
-    .badge-eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(56, 189, 248, 0.1);
-        border: 1px solid rgba(56, 189, 248, 0.3);
-        padding: 4px 14px;
-        border-radius: 9999px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        color: #38bdf8;
-        text-transform: uppercase;
-        margin-bottom: 0.75rem;
-    }
-    .pulse-dot {
-        display: inline-block;
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background-color: #38bdf8;
-        box-shadow: 0 0 10px #38bdf8;
     }
 
     /* KPI Metric Cards (Dashboard) */
     .metric-kpi-card {
-        background: #0f172a;
-        border: 1px solid #1e293b;
-        border-radius: 14px;
-        padding: 1.1rem 1.2rem;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-        border-top: 3px solid #0284c7;
+        background: #111827;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 12px;
+        padding: 1.15rem 1.25rem;
     }
     .metric-kpi-title {
         font-size: 0.75rem;
-        font-weight: 700;
+        font-weight: 600;
         color: #94a3b8;
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        margin-bottom: 0.35rem;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.4rem;
     }
     .metric-kpi-value {
         font-size: 1.85rem;
-        font-weight: 800;
+        font-weight: 700;
         font-family: 'JetBrains Mono', monospace;
         color: #f8fafc;
         letter-spacing: -0.02em;
@@ -204,55 +225,57 @@ st.markdown("""
     .metric-kpi-sub {
         font-size: 0.75rem;
         color: #64748b;
-        margin-top: 0.25rem;
+        margin-top: 0.3rem;
     }
 
     /* Badges & Status Tags */
     .badge-live {
-        background-color: rgba(16, 185, 129, 0.15);
+        background-color: rgba(16, 185, 129, 0.12);
         color: #34d399;
-        border: 1px solid rgba(16, 185, 129, 0.35);
-        padding: 0.3rem 0.75rem;
+        border: 1px solid rgba(16, 185, 129, 0.28);
+        padding: 0.25rem 0.7rem;
         border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 700;
+        font-size: 0.74rem;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        white-space: nowrap;
     }
     .badge-fallback {
-        background-color: rgba(245, 158, 11, 0.15);
+        background-color: rgba(245, 158, 11, 0.12);
         color: #fbbf24;
-        border: 1px solid rgba(245, 158, 11, 0.35);
-        padding: 0.3rem 0.75rem;
+        border: 1px solid rgba(245, 158, 11, 0.28);
+        padding: 0.25rem 0.7rem;
         border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 700;
+        font-size: 0.74rem;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        white-space: nowrap;
     }
 
-    /* Medical Disclaimer Banners */
+    /* Medical Disclaimer Banners (1px hairline border, no thick side stripes) */
     .disclaimer-box {
-        background: rgba(30, 27, 75, 0.5);
-        border-left: 4px solid #818cf8;
-        padding: 0.85rem 1.1rem;
-        border-radius: 8px;
+        background: rgba(30, 41, 59, 0.45);
+        border: 1px solid rgba(129, 140, 248, 0.28);
+        padding: 0.9rem 1.15rem;
+        border-radius: 10px;
         margin: 1rem 0;
-        color: #e0e7ff;
+        color: #cbd5e1;
         font-size: 0.85rem;
-        line-height: 1.5;
+        line-height: 1.55;
     }
     .warning-box {
-        background: rgba(69, 10, 10, 0.5);
-        border-left: 4px solid #f87171;
-        padding: 0.85rem 1.1rem;
-        border-radius: 8px;
+        background: rgba(127, 29, 29, 0.22);
+        border: 1px solid rgba(248, 113, 113, 0.32);
+        padding: 0.9rem 1.15rem;
+        border-radius: 10px;
         margin: 1rem 0;
-        color: #fee2e2;
+        color: #fecaca;
         font-size: 0.85rem;
-        line-height: 1.5;
+        line-height: 1.55;
     }
 
     /* Custom Probability Bar Styles */
@@ -267,16 +290,16 @@ st.markdown("""
         font-size: 0.85rem;
     }
     .prob-track {
-        background: rgba(30, 41, 59, 0.8);
+        background: rgba(30, 41, 59, 0.85);
         border-radius: 9999px;
-        height: 10px;
+        height: 8px;
         overflow: hidden;
-        border: 1px solid rgba(51, 65, 85, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.12);
     }
     .prob-fill {
         height: 100%;
         border-radius: 9999px;
-        transition: width 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+        transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
     /* Markdown Tables in Chat */
@@ -285,22 +308,22 @@ st.markdown("""
         border-collapse: collapse;
         margin: 0.9rem 0;
         font-size: 0.86rem;
-        background: rgba(15, 23, 42, 0.6);
-        border: 1px solid rgba(51, 65, 85, 0.7);
+        background: rgba(17, 24, 39, 0.7);
+        border: 1px solid rgba(148, 163, 184, 0.16);
         border-radius: 8px;
         overflow: hidden;
     }
     div[data-testid="stChatMessage"] th {
         background: rgba(30, 41, 59, 0.9);
         color: #38bdf8;
-        font-weight: 700;
+        font-weight: 600;
         padding: 8px 12px;
-        border-bottom: 1px solid rgba(51, 65, 85, 0.8);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.16);
         text-align: left;
     }
     div[data-testid="stChatMessage"] td {
         padding: 8px 12px;
-        border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
         color: #cbd5e1;
     }
     div[data-testid="stChatMessage"] tr:last-child td {
@@ -379,7 +402,7 @@ with st.sidebar:
 
     page = st.radio(
         "Navigation",
-        options=["📊 Dashboard", "🔬 MRI Analysis", "💡 Knowledge Assistant", "ℹ️ About Project"],
+        options=["📊 Dashboard", "🔬 MRI Analysis", "💡 Knowledge Assistant"],
         index=1,  # Default to MRI Analysis for seamless demo
     )
 
@@ -414,7 +437,7 @@ with st.sidebar:
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
                 <span style="color: #94a3b8;">LLM Provider</span>
-                <span style="background: rgba(129, 140, 248, 0.12); color: #a5b4fc; border: 1px solid rgba(129, 140, 248, 0.25); padding: 1px 7px; border-radius: 5px; font-weight: 600; font-size: 0.72rem;">{GEMINI_MODEL}</span>
+                <span style="background: rgba(129, 140, 248, 0.12); color: #a5b4fc; border: 1px solid rgba(129, 140, 248, 0.25); padding: 2px 7px; border-radius: 5px; font-weight: 600; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; white-space: nowrap;">{GEMINI_MODEL}</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -434,124 +457,173 @@ with st.sidebar:
 # PAGE 1: DASHBOARD
 # =============================================================================
 if page == "📊 Dashboard":
-    st.markdown("""
-    <div style="margin-bottom: 1.8rem;">
-        <div class="badge-eyebrow"><span class="pulse-dot"></span> EVALUATION &amp; BENCHMARKS</div>
-        <h1 style="font-size: 2.3rem; font-weight: 800; color: #f8fafc; letter-spacing: -0.02em; margin: 0 0 0.4rem 0;">
-            Project Overview <span style="background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">&amp; Metrics Dashboard</span>
+    # Header Strip
+    dh1, dh2 = st.columns([2.2, 1.1], gap="medium")
+    with dh1:
+        st.markdown("""
+        <h1 style="font-size: 2.05rem; font-weight: 800; color: #f8fafc; letter-spacing: -0.025em; line-height: 1.15; margin: 0 0 0.25rem 0;">
+            Project Overview
         </h1>
-        <p style="font-size: 1rem; color: #94a3b8; margin: 0; max-width: 850px;">
-            Comprehensive performance summary across held-out test splits, dataset distributions, and class-weighted training dynamics.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # Top KPI Metrics Cards
-    k1, k2, k3, k4 = st.columns(4)
-    with k1:
-        st.markdown("""
-        <div class="metric-kpi-card">
-            <div class="metric-kpi-title">Test Accuracy</div>
-            <div class="metric-kpi-value">95.52%</div>
-            <div class="metric-kpi-sub">917 / 960 held-out scans</div>
-        </div>
         """, unsafe_allow_html=True)
+    with dh2:
+        st.markdown(
+            '<div style="display: flex; justify-content: flex-end; align-items: center; padding-top: 0.45rem;">'
+            '<span style="font-size: 0.74rem; font-family: \'JetBrains Mono\', monospace; color: #38bdf8; '
+            'background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.24); '
+            'padding: 5px 12px; border-radius: 9999px; white-space: nowrap;">'
+            'EfficientNet-B0 &bull; Epoch 15 &bull; N=960 Eval</span></div>',
+            unsafe_allow_html=True,
+        )
 
-    with k2:
-        st.markdown("""
-        <div class="metric-kpi-card" style="border-top-color: #06b6d4;">
-            <div class="metric-kpi-title">Macro F1-Score</div>
-            <div class="metric-kpi-value">0.9486</div>
-            <div class="metric-kpi-sub">Balanced across all 4 classes</div>
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown("<div style='height: 0.7rem;'></div>", unsafe_allow_html=True)
 
-    with k3:
-        st.markdown("""
-        <div class="metric-kpi-card" style="border-top-color: #10b981;">
-            <div class="metric-kpi-title">Test Specificity</div>
-            <div class="metric-kpi-value">98.24%</div>
-            <div class="metric-kpi-sub">One-vs-Rest Macro Average</div>
-        </div>
-        """, unsafe_allow_html=True)
+    # -------------------------------------------------------------------------
+    # Asymmetric Bento Top Stage: [1.3, 1.0]
+    # -------------------------------------------------------------------------
+    bento_left, bento_right = st.columns([1.3, 1.0], gap="large")
 
-    with k4:
-        st.markdown("""
-        <div class="metric-kpi-card" style="border-top-color: #818cf8;">
-            <div class="metric-kpi-title">Validation F1</div>
-            <div class="metric-kpi-value">0.9780</div>
-            <div class="metric-kpi-sub">Best Checkpoint (Epoch 15)</div>
-        </div>
-        """, unsafe_allow_html=True)
+    with bento_left:
+        # Primary Benchmark Hero Readout + 3-Metric Sub-Telemetry
+        st.markdown(
+            '<div style="background: #0d1322; border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 16px; padding: 8px; height: 100%;">'
+            '<div style="background: #111827; border: 1px solid rgba(56, 189, 248, 0.22); border-radius: 11px; padding: 1.45rem 1.5rem;">'
+            '<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">'
+            '<div>'
+            '<div style="font-size: 0.7rem; font-weight: 700; color: #94a3b8; letter-spacing: 0.09em; text-transform: uppercase;">HELD-OUT TEST ACCURACY</div>'
+            '<div style="font-size: 3.1rem; font-weight: 800; font-family: \'JetBrains Mono\', monospace; color: #38bdf8; line-height: 1.05; margin-top: 0.25rem; font-variant-numeric: tabular-nums;">95.52%</div>'
+            '<div style="font-size: 0.8rem; color: #64748b; margin-top: 0.35rem;">917 / 960 correctly classified axial slices</div>'
+            '</div>'
+            '<span style="font-size: 0.72rem; font-weight: 600; color: #34d399; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); padding: 4px 10px; border-radius: 9999px;">Test Split Verified</span>'
+            '</div>'
+            '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">'
+            '<div style="background: #0b0f19; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 9px; padding: 0.85rem 1rem;">'
+            '<div style="font-size: 0.68rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;">Macro F1</div>'
+            '<div style="font-size: 1.35rem; font-weight: 700; font-family: \'JetBrains Mono\', monospace; color: #f8fafc; margin-top: 0.2rem; font-variant-numeric: tabular-nums;">0.9486</div>'
+            '<div style="font-size: 0.7rem; color: #64748b; margin-top: 0.15rem;">4-class balanced</div>'
+            '</div>'
+            '<div style="background: #0b0f19; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 9px; padding: 0.85rem 1rem;">'
+            '<div style="font-size: 0.68rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;">Specificity</div>'
+            '<div style="font-size: 1.35rem; font-weight: 700; font-family: \'JetBrains Mono\', monospace; color: #34d399; margin-top: 0.2rem; font-variant-numeric: tabular-nums;">98.24%</div>'
+            '<div style="font-size: 0.7rem; color: #64748b; margin-top: 0.15rem;">One-vs-rest avg</div>'
+            '</div>'
+            '<div style="background: #0b0f19; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 9px; padding: 0.85rem 1rem;">'
+            '<div style="font-size: 0.68rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;">Val F1</div>'
+            '<div style="font-size: 1.35rem; font-weight: 700; font-family: \'JetBrains Mono\', monospace; color: #f8fafc; margin-top: 0.2rem; font-variant-numeric: tabular-nums;">0.9780</div>'
+            '<div style="font-size: 0.7rem; color: #64748b; margin-top: 0.15rem;">Epoch 15 ckpt</div>'
+            '</div>'
+            '</div></div></div>',
+            unsafe_allow_html=True,
+        )
 
-    st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
+    with bento_right:
+        # Visual Dataset Class Proportions Card (N = 6,400)
+        dist_rows = [
+            ("Non Demented", "50.0%", 50.0, "3,200", "#10b981"),
+            ("Very Mild Demented", "35.0%", 35.0, "2,240", "#38bdf8"),
+            ("Mild Demented", "14.0%", 14.0, "896", "#f59e0b"),
+            ("Moderate Demented", "1.0%", 2.5, "64", "#f43f5e"),
+        ]
+        dist_html = ""
+        for d_name, d_pct, d_bar_w, d_cnt, d_col in dist_rows:
+            dist_html += (
+                f'<div style="margin-bottom: 0.72rem;">'
+                f'<div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; margin-bottom: 4px;">'
+                f'<span style="color: #e2e8f0; font-weight: 500; display: inline-flex; align-items: center; gap: 7px;">'
+                f'<span style="width: 7px; height: 7px; border-radius: 50%; background: {d_col};"></span>{d_name}</span>'
+                f'<span style="font-family: \'JetBrains Mono\', monospace; color: #94a3b8; font-size: 0.76rem; font-variant-numeric: tabular-nums;">'
+                f'<b style="color: #f8fafc;">{d_cnt}</b> &bull; {d_pct}</span>'
+                f'</div>'
+                f'<div style="background: rgba(30, 41, 59, 0.9); border-radius: 9999px; height: 6px; overflow: hidden;">'
+                f'<div style="width: {d_bar_w}%; height: 100%; background: {d_col}; border-radius: 9999px;"></div>'
+                f'</div></div>'
+            )
 
-    # Two column layout: Pipeline & Dataset Breakdown
-    left_col, right_col = st.columns([1, 1], gap="large")
+        st.markdown(
+            f'<div style="background: #0d1322; border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 16px; padding: 8px;">'
+            f'<div style="background: #111827; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 11px; padding: 1.35rem 1.4rem;">'
+            f'<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">'
+            f'<span style="font-size: 0.88rem; font-weight: 700; color: #f8fafc;">Dataset Class Proportions</span>'
+            f'<span style="font-size: 0.72rem; font-family: \'JetBrains Mono\', monospace; color: #64748b;">N = 6,400</span>'
+            f'</div>'
+            f'{dist_html}'
+            f'</div></div>',
+            unsafe_allow_html=True,
+        )
 
-    with left_col:
-        st.markdown("""
-        <div class="bezel-card">
-            <div style="font-size: 1.05rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.8rem;">
-                🔄 Technical Pipeline
-            </div>
-            <ol style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; padding-left: 1.2rem; margin: 0;">
-                <li><b>Input Acquisition</b>: Ingests 2D axial slice scans in standard formats (JPG, JPEG, PNG).</li>
-                <li><b>Preprocessing</b>: Grayscale-to-RGB expansion, bilinear resize to 224&times;224, and ImageNet standardization.</li>
-                <li><b>Classification Engine</b>: EfficientNet-B0 feature extractor with inverse-frequency weighted cross-entropy loss.</li>
-                <li><b>Visual Explainability</b>: Native PyTorch hook Grad-CAM extracting spatial activation maps from <code>model.features[-1]</code>.</li>
-                <li><b>Clinical Context Explainer</b>: Structured text synthesis using Google Gemini (with deterministic offline fallback). <b>Zero image data is ever transmitted to the LLM</b>.</li>
-            </ol>
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
 
-        st.markdown("##### Dataset Class Proportions (N = 6,400)")
-        dataset_data = {
-            "Class Name": ["Non_Demented", "Very_Mild_Demented", "Mild_Demented", "Moderate_Demented"],
-            "Total Images": [3200, 2240, 896, 64],
-            "Dataset Share": ["50.0%", "35.0%", "14.0%", "1.0% (Extreme Minority)"],
-            "Held-Out Test (N=960)": [480, 336, 135, 9],
-        }
-        st.dataframe(pd.DataFrame(dataset_data), use_container_width=True, hide_index=True)
+    # -------------------------------------------------------------------------
+    # Full-Width Held-Out Test Set Performance Matrix (N = 960)
+    # -------------------------------------------------------------------------
+    matrix_rows = [
+        ("Non Demented", "#10b981", "96.85%", "96.04%", "0.9644", "96.88%", "480"),
+        ("Very Mild Demented", "#38bdf8", "96.04%", "93.75%", "0.9488", "97.92%", "336"),
+        ("Mild Demented", "#f59e0b", "89.86%", "98.52%", "0.9399", "98.18%", "135"),
+        ("Moderate Demented", "#f43f5e", "100.00%", "88.89%", "0.9412", "100.00%", "9"),
+    ]
+    tr_html = ""
+    for m_cls, m_col, m_prec, m_rec, m_f1, m_spec, m_n in matrix_rows:
+        tr_html += (
+            f'<tr style="border-bottom: 1px solid rgba(148, 163, 184, 0.08);">'
+            f'<td style="padding: 11px 14px; color: #f8fafc; font-weight: 600; display: flex; align-items: center; gap: 8px;">'
+            f'<span style="width: 8px; height: 8px; border-radius: 50%; background: {m_col};"></span>{m_cls}</td>'
+            f'<td style="padding: 11px 14px; text-align: right; font-family: \'JetBrains Mono\', monospace; color: #cbd5e1;">{m_prec}</td>'
+            f'<td style="padding: 11px 14px; text-align: right; font-family: \'JetBrains Mono\', monospace; color: #cbd5e1;">{m_rec}</td>'
+            f'<td style="padding: 11px 14px; text-align: right; font-family: \'JetBrains Mono\', monospace; color: #38bdf8; font-weight: 700;">{m_f1}</td>'
+            f'<td style="padding: 11px 14px; text-align: right; font-family: \'JetBrains Mono\', monospace; color: #34d399;">{m_spec}</td>'
+            f'<td style="padding: 11px 14px; text-align: right; font-family: \'JetBrains Mono\', monospace; color: #94a3b8;">{m_n}</td>'
+            f'</tr>'
+        )
 
-    with right_col:
-        st.markdown("##### Held-Out Test Set Performance Breakdown (N = 960)")
-        test_metrics_data = {
-            "Class": ["Mild_Demented", "Moderate_Demented", "Non_Demented", "Very_Mild_Demented"],
-            "Precision": ["89.86%", "100.00%", "96.85%", "96.04%"],
-            "Recall": ["98.52%", "88.89%", "96.04%", "93.75%"],
-            "F1-Score": ["0.9399", "0.9412", "0.9644", "0.9488"],
-            "Specificity": ["98.18%", "100.00%", "96.88%", "97.92%"],
-            "Test N": [135, 9, 480, 336],
-        }
-        st.dataframe(pd.DataFrame(test_metrics_data), use_container_width=True, hide_index=True)
+    st.markdown(
+        f'<div style="background: #0d1322; border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 16px; padding: 8px; margin-bottom: 1.2rem;">'
+        f'<div style="background: #111827; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 11px; overflow: hidden;">'
+        f'<div style="padding: 1rem 1.25rem; border-bottom: 1px solid rgba(148, 163, 184, 0.1); display: flex; justify-content: space-between; align-items: center;">'
+        f'<span style="font-size: 0.92rem; font-weight: 700; color: #f8fafc;">Held-Out Test Set Performance Breakdown</span>'
+        f'<span style="font-size: 0.72rem; font-family: \'JetBrains Mono\', monospace; color: #64748b;">N = 960 Slices (15% Stratified Split)</span>'
+        f'</div>'
+        f'<table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; font-variant-numeric: tabular-nums;">'
+        f'<thead><tr style="background: #0b0f19; border-bottom: 1px solid rgba(148, 163, 184, 0.12);">'
+        f'<th style="padding: 10px 14px; text-align: left; font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;">Dataset Class</th>'
+        f'<th style="padding: 10px 14px; text-align: right; font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;">Precision</th>'
+        f'<th style="padding: 10px 14px; text-align: right; font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;">Recall</th>'
+        f'<th style="padding: 10px 14px; text-align: right; font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;">F1-Score</th>'
+        f'<th style="padding: 10px 14px; text-align: right; font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;">Specificity</th>'
+        f'<th style="padding: 10px 14px; text-align: right; font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;">Test N</th>'
+        f'</tr></thead>'
+        f'<tbody>{tr_html}</tbody>'
+        f'</table></div></div>',
+        unsafe_allow_html=True,
+    )
 
-        st.markdown("""
-        <div class="disclaimer-box" style="margin-top: 1.2rem;">
-            <b>🔬 Minority Class Scrutiny (Moderate_Demented, N=9):</b><br>
-            The model achieved <b>8/9 True Positives</b> with <b>0 False Positives</b> (100% precision, 88.89% recall).
-            Due to the small sample size (N=9), each test misclassification impacts class recall by 11.1%.
-        </div>
-        """, unsafe_allow_html=True)
+    # Compact Architecture & Training Spec Strip
+    st.markdown(
+        '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem;">'
+        '<div style="background: #111827; border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 10px; padding: 0.85rem 1rem;">'
+        '<div style="font-size: 0.68rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em;">Input Tensor</div>'
+        '<div style="font-size: 0.86rem; font-family: \'JetBrains Mono\', monospace; color: #e2e8f0; font-weight: 600; margin-top: 3px;">224&times;224 RGB</div>'
+        '</div>'
+        '<div style="background: #111827; border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 10px; padding: 0.85rem 1rem;">'
+        '<div style="font-size: 0.68rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em;">Loss Function</div>'
+        '<div style="font-size: 0.86rem; font-family: \'JetBrains Mono\', monospace; color: #e2e8f0; font-weight: 600; margin-top: 3px;">Weighted Cross-Entropy</div>'
+        '</div>'
+        '<div style="background: #111827; border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 10px; padding: 0.85rem 1rem;">'
+        '<div style="font-size: 0.68rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em;">Data Partition</div>'
+        '<div style="font-size: 0.86rem; font-family: \'JetBrains Mono\', monospace; color: #e2e8f0; font-weight: 600; margin-top: 3px;">70 / 15 / 15 Split</div>'
+        '</div>'
+        '<div style="background: #111827; border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 10px; padding: 0.85rem 1rem;">'
+        '<div style="font-size: 0.68rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em;">Explainability</div>'
+        '<div style="font-size: 0.86rem; font-family: \'JetBrains Mono\', monospace; color: #e2e8f0; font-weight: 600; margin-top: 3px;">Grad-CAM + Gemini</div>'
+        '</div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
 
 
 # =============================================================================
 # PAGE 2: MRI ANALYSIS (CORE PRESENTATION DEMO)
 # =============================================================================
 elif page == "🔬 MRI Analysis":
-    # Hero Title with Eyebrow Pill
-    st.markdown("""
-    <div style="margin-bottom: 1.5rem;">
-        <div class="badge-eyebrow"><span class="pulse-dot"></span> NEUROSCAN AI &bull; DEEP LEARNING WORKSTATION</div>
-        <h1 style="font-size: 2.3rem; font-weight: 800; color: #f8fafc; letter-spacing: -0.02em; margin: 0 0 0.4rem 0;">
-            2D Brain MRI Analysis <span style="background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">&amp; Explainability</span>
-        </h1>
-        <p style="font-size: 0.98rem; color: #94a3b8; margin: 0; max-width: 850px;">
-            Select an instant demo scan or upload a custom axial MRI slice to run neural classification, spatial Grad-CAM saliency mapping, and clinical context explanation.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
     # Load model safely
     try:
         model, idx_to_class, class_to_idx, meta, device = get_cached_model()
@@ -561,7 +633,6 @@ elif page == "🔬 MRI Analysis":
 
     # Session State Initialization for Loaded Image
     if "active_image" not in st.session_state:
-        # Default initialize with moderate demo image for immediate presentation readiness
         default_path = PRESET_SAMPLES["Moderate_Demented"]["path"]
         if default_path.exists():
             st.session_state["active_image"] = Image.open(default_path)
@@ -570,169 +641,130 @@ elif page == "🔬 MRI Analysis":
             st.session_state["active_image"] = None
             st.session_state["active_source_name"] = None
 
-    # Top Control Area: Input Selection & Analysis Settings
-    ctrl_col, config_col = st.columns([2, 1], gap="large")
-
-    with ctrl_col:
-        st.markdown("<div style='font-size: 0.85rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;'>1. Select MRI Scan Source</div>", unsafe_allow_html=True)
-
+    # Compact Command Header Bar
+    hdr_col, mode_col, lang_col = st.columns([2.2, 1.3, 1.0], gap="medium")
+    with hdr_col:
+        st.markdown("""
+        <h1 style="font-size: 2.05rem; font-weight: 800; color: #f8fafc; letter-spacing: -0.025em; line-height: 1.15; margin: 0 0 0.25rem 0;">
+            2D Brain MRI Analysis
+        </h1>
+        """, unsafe_allow_html=True)
+    with mode_col:
         input_mode = st.radio(
-            "Input Mode",
-            options=["⚡ Instant Demo Scans", "📁 Upload Custom File"],
+            "Source",
+            options=["Demo Scans", "Upload Scan"],
             horizontal=True,
-            label_visibility="collapsed",
         )
+    with lang_col:
+        language_choice = st.selectbox(
+            "Language",
+            options=["English", "Hindi / Hinglish"],
+            index=0,
+        )
+        lang_code = "hinglish" if "Hinglish" in language_choice else "english"
 
-        if input_mode == "⚡ Instant Demo Scans":
-            st.markdown("<div style='font-size: 0.78rem; color: #94a3b8; margin-bottom: 0.6rem;'>Click any sample to load a verified dataset image instantly:</div>", unsafe_allow_html=True)
-            p1, p2, p3, p4 = st.columns(4)
+    st.markdown("<div style='height: 0.6rem;'></div>", unsafe_allow_html=True)
 
+    # -------------------------------------------------------------------------
+    # Asymmetric 2-Column Workstation: [1.05, 1.35]
+    # -------------------------------------------------------------------------
+    left_ws, right_ws = st.columns([1.05, 1.35], gap="large")
+
+    with left_ws:
+        # 1. Specimen Selector or Uploader
+        if input_mode == "Demo Scans":
+            p1, p2, p3, p4 = st.columns(4, gap="small")
             with p1:
-                if st.button("🔴 Moderate (1%)", key="btn_mod", use_container_width=True, help="Load Moderate_Demented sample"):
+                if st.button("Moderate", key="btn_mod", use_container_width=True, help="Moderate Demented (1%)"):
                     mod_p = PRESET_SAMPLES["Moderate_Demented"]["path"]
                     if mod_p.exists():
                         st.session_state["active_image"] = Image.open(mod_p)
                         st.session_state["active_source_name"] = "moderate.jpg (Preset: Moderate Demented)"
                         st.session_state.pop("last_analysis", None)
             with p2:
-                if st.button("🟠 Mild (14%)", key="btn_mild", use_container_width=True, help="Load Mild_Demented sample"):
+                if st.button("Mild", key="btn_mild", use_container_width=True, help="Mild Demented (14%)"):
                     mild_p = PRESET_SAMPLES["Mild_Demented"]["path"]
                     if mild_p.exists():
                         st.session_state["active_image"] = Image.open(mild_p)
                         st.session_state["active_source_name"] = "mild.jpg (Preset: Mild Demented)"
                         st.session_state.pop("last_analysis", None)
             with p3:
-                if st.button("🔵 Very Mild (35%)", key="btn_vmild", use_container_width=True, help="Load Very_Mild_Demented sample"):
+                if st.button("Very Mild", key="btn_vmild", use_container_width=True, help="Very Mild Demented (35%)"):
                     vmild_p = PRESET_SAMPLES["Very_Mild_Demented"]["path"]
                     if vmild_p.exists():
                         st.session_state["active_image"] = Image.open(vmild_p)
                         st.session_state["active_source_name"] = "verymild.jpg (Preset: Very Mild Demented)"
                         st.session_state.pop("last_analysis", None)
             with p4:
-                if st.button("🟢 Non-Dem (50%)", key="btn_non", use_container_width=True, help="Load Non_Demented sample"):
+                if st.button("Non-Dem", key="btn_non", use_container_width=True, help="Non-Demented (50%)"):
                     non_p = PRESET_SAMPLES["Non_Demented"]["path"]
                     if non_p.exists():
                         st.session_state["active_image"] = Image.open(non_p)
                         st.session_state["active_source_name"] = "non.jpg (Preset: Non-Demented)"
                         st.session_state.pop("last_analysis", None)
-
         else:
             uploaded_file = st.file_uploader(
-                "Upload an axial brain MRI scan (JPG, JPEG, PNG)",
+                "Upload axial brain MRI (JPG, JPEG, PNG)",
                 type=["jpg", "jpeg", "png"],
-                help="Upload a 2D axial brain slice image.",
             )
             if uploaded_file is not None:
                 try:
                     st.session_state["active_image"] = Image.open(uploaded_file)
-                    st.session_state["active_source_name"] = f"{uploaded_file.name} (Uploaded File)"
+                    st.session_state["active_source_name"] = f"{uploaded_file.name} (Uploaded)"
                     st.session_state.pop("last_analysis", None)
                 except Exception as e:
                     st.error(f"Invalid image format: {e}")
 
-    with config_col:
-        st.markdown("<div style='font-size: 0.85rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;'>2. Analysis Configuration</div>", unsafe_allow_html=True)
-        language_choice = st.selectbox(
-            "Explanation Language",
-            options=["English", "Hindi / Hinglish"],
-            index=0,
-            help="Select the language style for the educational result explanation.",
-        )
-        lang_code = "hinglish" if "Hinglish" in language_choice else "english"
+        active_img = st.session_state.get("active_image", None)
+        active_name = st.session_state.get("active_source_name", "None")
 
-        # Privacy Shield Callout Box
-        st.markdown("""
-        <div style="background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 0.75rem 0.9rem; margin-top: 0.6rem;">
-            <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; color: #38bdf8;">
-                <span>🔒</span> PRIVACY SHIELD ACTIVE
-            </div>
-            <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 0.2rem; line-height: 1.4;">
-                Only categorical labels &amp; softmax numbers are sent to the LLM. <b>Zero MRI pixels or file paths are ever transmitted.</b>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<hr style='border: none; border-top: 1px solid rgba(51, 65, 85, 0.5); margin: 1.5rem 0;'>", unsafe_allow_html=True)
-
-    # -------------------------------------------------------------------------
-    # Image Viewport & Action Trigger Row
-    # -------------------------------------------------------------------------
-    active_img = st.session_state.get("active_image", None)
-    active_name = st.session_state.get("active_source_name", "None")
-
-    if active_img is not None:
-        view_col, action_col = st.columns([1, 1], gap="large")
-
-        with view_col:
-            st.markdown("<div style='font-size: 0.85rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;'>Active Scan Viewport</div>", unsafe_allow_html=True)
-
-            # High-end Clinical PACS Viewport Enclosure
+        # 2. Machined Double-Bezel PACS Viewport
+        if active_img is not None:
             w, h = active_img.width, active_img.height
             mode = active_img.mode
 
-            st.markdown(f"""
-            <div style="background: #0b1120; border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);">
-                <div style="background: #0f172a; padding: 8px 14px; border-bottom: 1px solid rgba(51, 65, 85, 0.8); display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
-                        <span style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1; letter-spacing: 0.08em; text-transform: uppercase;">AXIAL MRI T1/T2 CONSOLE</span>
-                    </div>
-                    <span style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 2px 8px; border-radius: 4px;">{w} &times; {h} px &bull; {mode}</span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(
+                f'<div style="background: #0d1322; border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 16px; padding: 8px 8px 0 8px; margin-top: 0.4rem;">'
+                f'<div style="background: #060913; border: 1px solid rgba(148, 163, 184, 0.08); border-bottom: none; border-radius: 10px 10px 0 0; padding: 9px 14px; display: flex; justify-content: space-between; align-items: center;">'
+                f'<div style="display: flex; align-items: center; gap: 8px;">'
+                f'<span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981;"></span>'
+                f'<span style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1; letter-spacing: 0.08em;">AXIAL T1/T2 VIEWPORT</span>'
+                f'</div>'
+                f'<span style="font-size: 0.7rem; font-family: \'JetBrains Mono\', monospace; color: #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 2px 8px; border-radius: 5px;">{w}&times;{h}px &bull; {mode}</span>'
+                f'</div></div>',
+                unsafe_allow_html=True,
+            )
 
             st.image(active_img, use_container_width=True)
 
-            st.markdown(f"""
-            <div style="background: #0f172a; padding: 6px 14px; font-size: 0.72rem; color: #64748b; border: 1px solid rgba(51, 65, 85, 0.5); border-top: none; border-radius: 0 0 12px 12px; display: flex; justify-content: space-between;">
-                <span>Source: <b style="color: #94a3b8;">{active_name}</b></span>
-                <span>Preprocessed 2D Slice</span>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(
+                f'<div style="background: #0d1322; border: 1px solid rgba(148, 163, 184, 0.14); border-top: none; border-radius: 0 0 16px 16px; padding: 0 8px 8px 8px; margin-bottom: 0.9rem;">'
+                f'<div style="background: #060913; border: 1px solid rgba(148, 163, 184, 0.08); border-top: none; border-radius: 0 0 10px 10px; padding: 7px 14px; display: flex; justify-content: space-between; font-size: 0.72rem; color: #64748b;">'
+                f'<span>Source: <b style="color: #cbd5e1;">{active_name}</b></span>'
+                f'<span style="font-family: \'JetBrains Mono\', monospace;">224&times;224 target</span>'
+                f'</div></div>',
+                unsafe_allow_html=True,
+            )
 
-        with action_col:
-            st.markdown("<div style='font-size: 0.85rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;'>Execute Neural Pipeline</div>", unsafe_allow_html=True)
-
-            st.markdown("""
-            <div class="bezel-card" style="margin-bottom: 1rem;">
-                <div style="font-size: 0.95rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.4rem;">
-                    🚀 Automated Inference Stages
-                </div>
-                <div style="font-size: 0.82rem; color: #94a3b8; line-height: 1.55;">
-                    Executing the pipeline will:<br>
-                    &bull; <b>Preprocess</b>: Normalize tensor with ImageNet mean/std.<br>
-                    &bull; <b>Predict</b>: Compute softmax output logits on EfficientNet-B0.<br>
-                    &bull; <b>Grad-CAM</b>: Compute backpropagated gradients on layer <code>features[-1]</code>.<br>
-                    &bull; <b>Explain</b>: Synthesize clinical context with Google Gemini.
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-            analyze_button = st.button("🔬 Run Inference & Explainability Pipeline", type="primary", use_container_width=True)
+            # 3. Primary Action CTA anchored directly under the viewport
+            analyze_button = st.button("Run Inference & Explainability", type="primary", use_container_width=True)
 
             if analyze_button:
-                with st.spinner("Processing slice through EfficientNet-B0 and computing Grad-CAM..."):
-                    # 1. Preprocess & Predict
+                with st.spinner("Running EfficientNet-B0 inference & Grad-CAM..."):
                     input_tensor = preprocess_image(active_img, device=device)
                     result = predict_mri(model, input_tensor, idx_to_class)
-
                     pred_class = result["predicted_class"]
                     conf = result["confidence"]
                     probs = result["probabilities"]
-
-                    # 2. Grad-CAM Generation on last conv block
                     heatmap = generate_gradcam(model, input_tensor, target_class=result["predicted_index"])
-
-                    # 3. Privacy-Preserving LLM Result Explanation (ZERO images passed)
-                    explainer_input = {
-                        "predicted_class": pred_class,
-                        "confidence": conf,
-                        "probabilities": probs,
-                    }
-                    explanation_res = explain_result(explainer_input, language=lang_code)
-
-                # Persist results in session state
+                    explanation_res = explain_result(
+                        {
+                            "predicted_class": pred_class,
+                            "confidence": conf,
+                            "probabilities": probs,
+                        },
+                        language=lang_code,
+                    )
                 st.session_state["last_analysis"] = {
                     "pil_image": active_img,
                     "result": result,
@@ -742,9 +774,7 @@ elif page == "🔬 MRI Analysis":
                     "source_name": active_name,
                 }
 
-        # ---------------------------------------------------------------------
-        # Render Classification, Grad-CAM & LLM Results
-        # ---------------------------------------------------------------------
+    with right_ws:
         if "last_analysis" in st.session_state:
             data = st.session_state["last_analysis"]
             res = data["result"]
@@ -755,180 +785,203 @@ elif page == "🔬 MRI Analysis":
             conf = res["confidence"]
             probs = res["probabilities"]
 
-            # Class Specific Theme Colors
             color_map = {
-                "Non_Demented": {"accent": "#10b981", "bg": "rgba(16, 185, 129, 0.1)", "border": "rgba(16, 185, 129, 0.35)", "tag": "🟢 Non-Demented"},
-                "Very_Mild_Demented": {"accent": "#38bdf8", "bg": "rgba(56, 189, 248, 0.1)", "border": "rgba(56, 189, 248, 0.35)", "tag": "🔵 Very Mild Demented"},
-                "Mild_Demented": {"accent": "#f59e0b", "bg": "rgba(245, 158, 11, 0.1)", "border": "rgba(245, 158, 11, 0.35)", "tag": "🟠 Mild Demented"},
-                "Moderate_Demented": {"accent": "#f43f5e", "bg": "rgba(244, 63, 94, 0.12)", "border": "rgba(244, 63, 94, 0.4)", "tag": "🔴 Moderate Demented"},
+                "Non_Demented": {"accent": "#10b981", "bg": "rgba(16, 185, 129, 0.09)", "border": "rgba(16, 185, 129, 0.28)"},
+                "Very_Mild_Demented": {"accent": "#38bdf8", "bg": "rgba(56, 189, 248, 0.09)", "border": "rgba(56, 189, 248, 0.28)"},
+                "Mild_Demented": {"accent": "#f59e0b", "bg": "rgba(245, 158, 11, 0.09)", "border": "rgba(245, 158, 11, 0.28)"},
+                "Moderate_Demented": {"accent": "#f43f5e", "bg": "rgba(244, 63, 94, 0.10)", "border": "rgba(244, 63, 94, 0.32)"},
             }
-            theme = color_map.get(pred_class, {"accent": "#38bdf8", "bg": "rgba(56, 189, 248, 0.1)", "border": "rgba(56, 189, 248, 0.35)", "tag": pred_class})
+            theme = color_map.get(pred_class, {"accent": "#38bdf8", "bg": "rgba(56, 189, 248, 0.09)", "border": "rgba(56, 189, 248, 0.28)"})
             clean_name = pred_class.replace("_", " ")
 
-            st.markdown("<hr style='border: none; border-top: 1px solid rgba(51, 65, 85, 0.6); margin: 2rem 0;'>", unsafe_allow_html=True)
-            st.markdown("""
-            <div style="margin-bottom: 1.2rem;">
-                <div class="badge-eyebrow"><span class="pulse-dot"></span> PIPELINE OUTPUT SUMMARY</div>
-                <h2 style="font-size: 1.8rem; font-weight: 800; color: #f8fafc; letter-spacing: -0.01em; margin: 0;">
-                    Classification &amp; Explainability Telemetry
-                </h2>
-            </div>
-            """, unsafe_allow_html=True)
+            minority_note = ""
+            if pred_class == "Moderate_Demented":
+                minority_note = (
+                    f'<div style="margin-top: 0.85rem; padding: 0.6rem 0.85rem; border-radius: 8px; '
+                    f'background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.28); '
+                    f'font-size: 0.76rem; color: #fecdd3;">'
+                    f'<b>Minority Class Note:</b> Moderate Demented represents 1% (64 of 6,400) of the dataset.</div>'
+                )
 
-            # Result Hero & Probability Grid
-            res_col1, res_col2 = st.columns([1, 1], gap="large")
-
-            with res_col1:
-                # Dynamic Prediction Hero Card
-                minority_note = ""
-                if pred_class == "Moderate_Demented":
-                    minority_note = """
-                    <div style="margin-top: 0.9rem; padding: 0.6rem 0.8rem; border-radius: 8px; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); font-size: 0.75rem; color: #fecdd3;">
-                        ⚠️ <b>Extreme Minority Class Warning:</b> Moderate Demented represents only 1% (64 of 6,400 images) of the total dataset. Interpret confidence with caution.
-                    </div>
-                    """
-
-                st.markdown(f"""
-                <div style="background: #0f172a; border: 1px solid {theme['border']}; border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.4); position: relative;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem;">
-                        <div>
-                            <div style="font-size: 0.72rem; font-weight: 700; color: #94a3b8; letter-spacing: 0.1em; text-transform: uppercase;">CLASSIFIER PREDICTION</div>
-                            <div style="font-size: 2.1rem; font-weight: 800; color: {theme['accent']}; margin-top: 0.2rem; letter-spacing: -0.01em;">{clean_name}</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 0.72rem; font-weight: 700; color: #94a3b8; letter-spacing: 0.1em; text-transform: uppercase;">SOFTMAX CONFIDENCE</div>
-                            <div style="font-size: 2.1rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: #f8fafc; margin-top: 0.2rem;">{conf * 100:.2f}%</div>
-                        </div>
-                    </div>
-                    <div style="font-size: 0.84rem; color: #cbd5e1; background: {theme['bg']}; padding: 0.75rem 1rem; border-radius: 10px; border: 1px solid {theme['border']}; line-height: 1.5;">
-                        <b>Dataset Context:</b> {CLASS_DESCRIPTIONS.get(pred_class, 'Standard dataset category')}
-                    </div>
-                    {minority_note}
-                    <div style="margin-top: 0.9rem; font-size: 0.72rem; color: #64748b;">
-                        &bull; Confidence reflects the mathematical softmax distribution across 4 dataset categories, not a clinical probability of disease.
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-            with res_col2:
-                # Custom Horizontal Animated Probability Bars
-                st.markdown("""
-                <div class="bezel-card">
-                    <div style="font-size: 0.92rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.8rem; display: flex; justify-content: space-between;">
-                        <span>Category Softmax Distribution</span>
-                        <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 500;">Sum = 100.0%</span>
-                    </div>
-                """, unsafe_allow_html=True)
-
-                sorted_probs = sorted(probs.items(), key=lambda x: x[1], reverse=True)
-                for c_name, p_val in sorted_probs:
-                    pct = p_val * 100
-                    c_clean = c_name.replace("_", " ")
-                    is_pred = (c_name == pred_class)
-
-                    # Determine fill gradient
-                    if c_name == "Moderate_Demented":
-                        grad = "linear-gradient(90deg, #e11d48, #f43f5e)"
-                    elif c_name == "Mild_Demented":
-                        grad = "linear-gradient(90deg, #d97706, #f59e0b)"
-                    elif c_name == "Very_Mild_Demented":
-                        grad = "linear-gradient(90deg, #0284c7, #38bdf8)"
-                    else:
-                        grad = "linear-gradient(90deg, #059669, #10b981)"
-
-                    highlight_border = f"border: 1px solid rgba(56, 189, 248, 0.4);" if is_pred else ""
-
-                    st.markdown(f"""
-                    <div class="prob-row" style="{highlight_border} padding: 4px 8px; border-radius: 8px;">
-                        <div class="prob-header">
-                            <span style="font-weight: {'700' if is_pred else '500'}; color: {'#f8fafc' if is_pred else '#94a3b8'};">
-                                {'👉 ' if is_pred else ''}{c_clean}
-                            </span>
-                            <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: {'#38bdf8' if is_pred else '#cbd5e1'}; font-size: 0.82rem;">
-                                {pct:.2f}%
-                            </span>
-                        </div>
-                        <div class="prob-track">
-                            <div class="prob-fill" style="width: {max(pct, 1.5):.2f}%; background: {grad};"></div>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-
-                st.markdown("</div>", unsafe_allow_html=True)
-
-            st.markdown("<div style='height: 1.2rem;'></div>", unsafe_allow_html=True)
-
-            # -----------------------------------------------------------------
-            # Visual Explainability (Grad-CAM)
-            # -----------------------------------------------------------------
-            st.markdown("""
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
-                <div style="font-size: 1.25rem; font-weight: 700; color: #f8fafc;">🔍 Visual Explainability &bull; Grad-CAM</div>
-                <span style="font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 3px 9px; border-radius: 9999px; border: 1px solid rgba(56, 189, 248, 0.25);">Target Layer: model.features[-1]</span>
-            </div>
-            """, unsafe_allow_html=True)
-
-            st.markdown("""
-            <div style="font-size: 0.84rem; color: #94a3b8; margin-bottom: 0.9rem; line-height: 1.5;">
-                Grad-CAM computes the spatial gradients of the target class score with respect to feature maps in the final convolutional block.
-                The overlay highlights regions that mathematically guided the network's classification.
-            </div>
-            """, unsafe_allow_html=True)
-
-            # Render Matplotlib Figure in styled container
-            fig = create_gradcam_figure(
-                pil_image=data["pil_image"],
-                heatmap=heatmap,
-                predicted_class=res["predicted_class"],
-                confidence=res["confidence"],
-            )
-            st.pyplot(fig, use_container_width=True)
-            plt.close(fig)
-
-            st.markdown("""
-            <div class="disclaimer-box">
-                <b>🔬 Important Saliency Interpretation Notice:</b><br>
-                The heatmap visualization reflects mathematical gradient influence within the convolutional layers.
-                It visualizes image regions contributing to the mathematical score, <b>not</b> clinical lesion boundaries, cellular pathology, or definitive neurodegeneration.
-            </div>
-            """, unsafe_allow_html=True)
-
-            st.markdown("<div style='height: 1.2rem;'></div>", unsafe_allow_html=True)
-
-            # -----------------------------------------------------------------
-            # Educational LLM Result Explanation
-            # -----------------------------------------------------------------
-            status_badge_html = (
-                "<span class='badge-live'>🟢 Live LLM Explanation (Google Gemini 3.5 Flash)</span>"
-                if exp["status"] == "success"
-                else f"<span class='badge-fallback'>🛡️ Deterministic Local Fallback ({exp.get('error', 'API unavailable')})</span>"
+            # 1. Double-Bezel Prediction Hero Readout
+            st.markdown(
+                f'<div style="background: #0d1322; border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 16px; padding: 8px; margin-bottom: 1rem;">'
+                f'<div style="background: #111827; border: 1px solid {theme["border"]}; border-radius: 11px; padding: 1.35rem;">'
+                f'<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.9rem;">'
+                f'<div><div style="font-size: 0.7rem; font-weight: 700; color: #94a3b8; letter-spacing: 0.09em; text-transform: uppercase;">PREDICTED CLASS</div>'
+                f'<div style="font-size: 1.95rem; font-weight: 800; color: {theme["accent"]}; margin-top: 0.2rem; letter-spacing: -0.02em; line-height: 1.1;">{clean_name}</div></div>'
+                f'<div style="text-align: right;"><div style="font-size: 0.7rem; font-weight: 700; color: #94a3b8; letter-spacing: 0.09em; text-transform: uppercase;">CONFIDENCE</div>'
+                f'<div style="font-size: 1.95rem; font-weight: 800; font-family: \'JetBrains Mono\', monospace; color: #f8fafc; margin-top: 0.2rem; line-height: 1.1; font-variant-numeric: tabular-nums;">{conf * 100:.2f}%</div></div>'
+                f'</div>'
+                f'<div style="font-size: 0.83rem; color: #cbd5e1; background: {theme["bg"]}; padding: 0.7rem 0.95rem; border-radius: 8px; border: 1px solid {theme["border"]}; line-height: 1.5;">'
+                f'{CLASS_DESCRIPTIONS.get(pred_class, "Standard dataset category")}</div>'
+                f'{minority_note}'
+                f'<div style="margin-top: 0.75rem; font-size: 0.72rem; color: #64748b;">'
+                f'Softmax output across 4 dataset classes; not a clinical probability of disease.</div>'
+                f'</div></div>',
+                unsafe_allow_html=True,
             )
 
-            st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #090e1a 0%, #111a2e 100%); border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 1.2rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(99, 102, 241, 0.2); padding-bottom: 0.75rem;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 1.4rem;">💬</span>
-                        <span style="font-size: 1.15rem; font-weight: 700; color: #e0e7ff;">Clinical Context Explainer</span>
-                    </div>
-                    {status_badge_html}
-                </div>
-            """, unsafe_allow_html=True)
+            # 2. Unified Double-Bezel 4-Class Softmax Spectrum
+            sorted_probs = sorted(probs.items(), key=lambda x: x[1], reverse=True)
+            bars_html = ""
+            for c_name, p_val in sorted_probs:
+                pct = p_val * 100
+                c_clean = c_name.replace("_", " ")
+                is_pred = (c_name == pred_class)
+                if c_name == "Moderate_Demented":
+                    bar_color = "#f43f5e"
+                elif c_name == "Mild_Demented":
+                    bar_color = "#f59e0b"
+                elif c_name == "Very_Mild_Demented":
+                    bar_color = "#38bdf8"
+                else:
+                    bar_color = "#10b981"
 
-            st.markdown(exp["explanation"])
+                row_bg = "rgba(56, 189, 248, 0.07)" if is_pred else "transparent"
+                row_border = "1px solid rgba(56, 189, 248, 0.25)" if is_pred else "1px solid transparent"
+                label_color = "#f8fafc" if is_pred else "#94a3b8"
+                val_color = "#38bdf8" if is_pred else "#cbd5e1"
+                bars_html += (
+                    f'<div style="background: {row_bg}; border: {row_border}; border-radius: 8px; padding: 6px 10px; margin-bottom: 0.55rem;">'
+                    f'<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 0.84rem;">'
+                    f'<span style="font-weight: {"700" if is_pred else "500"}; color: {label_color};">{c_clean}</span>'
+                    f'<span style="font-family: \'JetBrains Mono\', monospace; font-weight: 700; color: {val_color}; font-variant-numeric: tabular-nums;">{pct:.2f}%</span>'
+                    f'</div>'
+                    f'<div style="background: rgba(30, 41, 59, 0.9); border-radius: 9999px; height: 7px; overflow: hidden;">'
+                    f'<div style="width: {max(pct, 1.5):.2f}%; height: 100%; background: {bar_color}; border-radius: 9999px;"></div>'
+                    f'</div></div>'
+                )
 
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown(
+                f'<div style="background: #0d1322; border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 16px; padding: 8px;">'
+                f'<div style="background: #111827; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 11px; padding: 1.2rem;">'
+                f'<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">'
+                f'<span style="font-size: 0.88rem; font-weight: 700; color: #f8fafc;">Class Softmax Distribution</span>'
+                f'<span style="font-size: 0.72rem; font-family: \'JetBrains Mono\', monospace; color: #64748b;">Sum = 100.0%</span>'
+                f'</div>'
+                f'{bars_html}'
+                f'</div></div>',
+                unsafe_allow_html=True,
+            )
+        else:
+            # Composed Ready State (No blank void)
+            st.markdown(
+                f'<div style="background: #0d1322; border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 16px; padding: 8px;">'
+                f'<div style="background: #111827; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 11px; padding: 2rem 1.5rem;">'
+                f'<div style="display: inline-flex; align-items: center; gap: 7px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25); padding: 3px 10px; border-radius: 9999px; font-size: 0.72rem; font-weight: 600; color: #38bdf8; margin-bottom: 1rem;">'
+                f'Ready for Inference</div>'
+                f'<div style="font-size: 1.2rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.5rem;">Diagnostic Telemetry Standby</div>'
+                f'<div style="font-size: 0.88rem; color: #94a3b8; line-height: 1.55; margin-bottom: 1.25rem; max-width: 52ch;">'
+                f'Select a preset scan or upload an axial MRI slice on the left, then run inference to inspect class probabilities, Grad-CAM saliency maps, and educational context.</div>'
+                f'<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.78rem;">'
+                f'<div style="background: #0b0f19; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 8px; padding: 0.7rem 0.9rem;">'
+                f'<div style="color: #64748b; margin-bottom: 2px;">Backbone</div>'
+                f'<div style="color: #e2e8f0; font-family: \'JetBrains Mono\', monospace; font-weight: 600;">EfficientNet-B0 (Ep {meta["epoch"]})</div></div>'
+                f'<div style="background: #0b0f19; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 8px; padding: 0.7rem 0.9rem;">'
+                f'<div style="color: #64748b; margin-bottom: 2px;">Saliency Target</div>'
+                f'<div style="color: #e2e8f0; font-family: \'JetBrains Mono\', monospace; font-weight: 600;">model.features[-1]</div></div>'
+                f'</div></div></div>',
+                unsafe_allow_html=True,
+            )
 
-            # Mandatory Non-Diagnostic Disclaimer
-            st.markdown("""
-            <div class="warning-box">
-                <b>⚠️ NON-DIAGNOSTIC NOTICE:</b> NeuroScan AI is an educational engineering research tool developed for university coursework.
-                Predictions and explanations are not medical diagnoses. For clinical assessment, always consult certified physicians, neurologists, and radiologists.
-            </div>
-            """, unsafe_allow_html=True)
+    # -------------------------------------------------------------------------
+    # Full-Width Explainability Stage (Grad-CAM + Clinical Context Explainer)
+    # -------------------------------------------------------------------------
+    if "last_analysis" in st.session_state:
+        data = st.session_state["last_analysis"]
+        res = data["result"]
+        heatmap = data["heatmap"]
+        exp = data["explanation_res"]
 
-    else:
-        st.info("Please select an instant demo scan or upload an axial MRI image above to begin.")
+        st.markdown("<div style='height: 1.6rem;'></div>", unsafe_allow_html=True)
+
+        # Grad-CAM Section Header
+        st.markdown(
+            '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">'
+            '<div style="font-size: 1.2rem; font-weight: 700; color: #f8fafc;">Visual Explainability &bull; Grad-CAM</div>'
+            '<span style="font-size: 0.72rem; font-family: \'JetBrains Mono\', monospace; color: #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 3px 10px; border-radius: 9999px; border: 1px solid rgba(56, 189, 248, 0.24);">Target: model.features[-1]</span>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
+        fig = create_gradcam_figure(
+            pil_image=data["pil_image"],
+            heatmap=heatmap,
+            predicted_class=res["predicted_class"],
+            confidence=res["confidence"],
+        )
+        st.pyplot(fig, use_container_width=True)
+        plt.close(fig)
+
+        st.markdown("<div style='height: 1.4rem;'></div>", unsafe_allow_html=True)
+
+        # Educational LLM Result Explanation
+        raw_err = str(exp.get("error", "") or "")
+        if "429" in raw_err or "quota" in raw_err.lower() or "resource_exhausted" in raw_err.lower():
+            short_err = "API Quota Limit Reached"
+        elif "timeout" in raw_err.lower():
+            short_err = "Request Timeout"
+        elif "503" in raw_err:
+            short_err = "Service Busy"
+        elif raw_err:
+            short_err = "API Unavailable"
+        else:
+            short_err = "Offline Mode"
+
+        status_badge_html = (
+            f"<span class='badge-live'>Live LLM ({GEMINI_MODEL})</span>"
+            if exp["status"] == "success"
+            else f"<span class='badge-fallback'>Local Fallback &bull; {short_err}</span>"
+        )
+
+        st.markdown(
+            f'<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; '
+            f'background: #111827; border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 12px; '
+            f'padding: 0.9rem 1.25rem; margin-bottom: 0.75rem;">'
+            f'<span style="font-size: 1.08rem; font-weight: 700; color: #f8fafc;">Clinical Context Explainer</span>'
+            f'{status_badge_html}'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+
+        if exp["status"] == "success":
+            with st.container(border=True):
+                st.markdown(exp["explanation"])
+        else:
+            p_cls = res["predicted_class"]
+            p_clean = p_cls.replace("_", " ")
+            p_conf = res["confidence"] * 100
+            is_hinglish = data.get("lang_code", "english") == "hinglish"
+
+            if is_hinglish:
+                summary_html = (
+                    f'<p style="margin: 0 0 0.75rem 0; color: #e2e8f0; line-height: 1.6; font-size: 0.92rem;">'
+                    f'EfficientNet-B0 classifier ne is 2D axial brain MRI slice ko <b>{p_clean}</b> category mein '
+                    f'<b>{p_conf:.1f}%</b> softmax confidence ke saath classify kiya hai. '
+                    f'{CLASS_DESCRIPTIONS.get(p_cls, "")}</p>'
+                    f'<p style="margin: 0; color: #94a3b8; line-height: 1.55; font-size: 0.84rem;">'
+                    f'<b>Note:</b> Yeh score sirf ek single 2D slice par model ka mathematical output hai, clinical diagnosis nahi. '
+                    f'Dataset mein patient IDs available nahi hain, isliye real medical evaluation ke liye hamesha qualified neurologist se consult karein.</p>'
+                )
+            else:
+                summary_html = (
+                    f'<p style="margin: 0 0 0.75rem 0; color: #e2e8f0; line-height: 1.6; font-size: 0.92rem;">'
+                    f'The EfficientNet-B0 classifier assigned this 2D axial MRI slice to the <b>{p_clean}</b> category '
+                    f'with a softmax score of <b>{p_conf:.1f}%</b>. '
+                    f'{CLASS_DESCRIPTIONS.get(p_cls, "")}</p>'
+                    f'<p style="margin: 0; color: #94a3b8; line-height: 1.55; font-size: 0.84rem;">'
+                    f'<b>Scope &amp; Limitations:</b> This score reflects model pattern matching on a single 2D slice rather than a clinical probability of disease. '
+                    f'Because source patient identifiers are unavailable, patient-level leakage cannot be ruled out; always consult a qualified clinician for medical assessment.</p>'
+                )
+
+            st.markdown(
+                f'<div style="background: #0d1322; border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 14px; padding: 8px;">'
+                f'<div style="background: #111827; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 9px; padding: 1.25rem 1.35rem;">'
+                f'{summary_html}'
+                f'</div></div>',
+                unsafe_allow_html=True,
+            )
 
 
 # =============================================================================
@@ -937,11 +990,10 @@ elif page == "🔬 MRI Analysis":
 elif page == "💡 Knowledge Assistant":
     st.markdown("""
     <div style="margin-bottom: 1.5rem;">
-        <div class="badge-eyebrow"><span class="pulse-dot"></span> NEUROSCAN AI &bull; RAG KNOWLEDGE ASSISTANT</div>
-        <h1 style="font-size: 2.3rem; font-weight: 800; color: #f8fafc; letter-spacing: -0.02em; margin: 0 0 0.4rem 0;">
-            Educational <span style="background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Knowledge Assistant</span>
+        <h1 style="font-size: 2.15rem; font-weight: 800; color: #f8fafc; letter-spacing: -0.025em; line-height: 1.15; margin: 0 0 0.45rem 0;">
+            Educational Knowledge Assistant
         </h1>
-        <p style="font-size: 0.98rem; color: #94a3b8; margin: 0; max-width: 850px;">
+        <p style="font-size: 0.96rem; color: #94a3b8; margin: 0; max-width: 68ch; line-height: 1.55;">
             Ask questions about Alzheimer's pathology, dementia stages, 2D brain MRI slices, EfficientNet-B0, or Grad-CAM explainability.
             Answers are grounded in curated educational sources with transparent citations.
         </p>
@@ -1111,87 +1163,3 @@ elif page == "💡 Knowledge Assistant":
             "status": res_status,
         })
         st.rerun()
-
-
-# =============================================================================
-# PAGE 4: ABOUT PROJECT & SAFETY
-# =============================================================================
-elif page == "ℹ️ About Project":
-    st.markdown("""
-    <div style="margin-bottom: 1.8rem;">
-        <div class="badge-eyebrow"><span class="pulse-dot"></span> ARCHITECTURE &amp; METHODOLOGY</div>
-        <h1 style="font-size: 2.3rem; font-weight: 800; color: #f8fafc; letter-spacing: -0.02em; margin: 0 0 0.4rem 0;">
-            About <span style="background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">NeuroScan AI</span>
-        </h1>
-        <p style="font-size: 1rem; color: #94a3b8; margin: 0; max-width: 850px;">
-            Academic context, engineering methodology, technology stack, and known dataset constraints.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class="warning-box" style="font-size: 0.92rem; padding: 1.1rem 1.3rem;">
-        <b>⚠️ MANDATORY MEDICAL DISCLAIMER:</b><br>
-        NeuroScan AI is strictly an undergraduate engineering academic demonstration.
-        It has not undergone clinical trials, clinical validation, or regulatory approval by FDA/EMA/CDSCO.
-        Model predictions must never be interpreted as clinical diagnoses or used to direct patient care.
-        For cognitive, neurological, or memory concerns, always consult certified healthcare specialists.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
-
-    col_a, col_b = st.columns(2, gap="large")
-
-    with col_a:
-        st.markdown("""
-        <div class="bezel-card">
-            <div style="font-size: 1.1rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.75rem;">
-                🎯 Project Objectives
-            </div>
-            <div style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
-                NeuroScan AI explores the intersection of deep learning computer vision, explainable AI (XAI),
-                and large language model interpretation for medical image analysis:
-                <ul style="margin-top: 0.4rem; padding-left: 1.2rem;">
-                    <li><b>Transfer Learning Vision</b>: Fine-tuned EfficientNet-B0 on preprocessed 2D axial MRI slices.</li>
-                    <li><b>Mathematical Saliency</b>: Native zero-dependency PyTorch Grad-CAM visualizing network attention layers.</li>
-                    <li><b>Language Synthesis</b>: Translates quantitative outputs into accessible educational context in English and Hinglish.</li>
-                    <li><b>Safe Architecture</b>: Zero image data transmission to external APIs, strict input validation, and automated fallback logic.</li>
-                </ul>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("""
-        <div class="bezel-card">
-            <div style="font-size: 1.1rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.75rem;">
-                🛠️ Technology Stack
-            </div>
-            <div style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
-                &bull; <b>Deep Learning Engine</b>: PyTorch 2.x, Torchvision<br>
-                &bull; <b>Model Backbone</b>: EfficientNet-B0 (5.3M parameters)<br>
-                &bull; <b>Web Workstation</b>: Streamlit 1.x<br>
-                &bull; <b>Language Explainer</b>: Google Gemini REST API (<code>gemini-3.5-flash</code>)<br>
-                &bull; <b>Visualization</b>: Matplotlib, Pillow, NumPy
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col_b:
-        st.markdown("""
-        <div class="bezel-card">
-            <div style="font-size: 1.1rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.75rem;">
-                ⚠️ Critical Dataset &amp; Model Limitations
-            </div>
-            <ol style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.6; padding-left: 1.2rem; margin: 0;">
-                <li><b>2D Slice vs 3D Volume</b>: Scans are processed as single 2D axial slices rather than complete 3D volumetric T1/T2 MRI sequences.</li>
-                <li><b>Patient-Level Leakage Risk</b>: The underlying dataset lacks patient IDs; multiple slices from the same subject may exist across splits.</li>
-                <li><b>Severe Minority Imbalance</b>: The <code>Moderate_Demented</code> class comprises only 1% (64 scans) of the dataset. Despite class-weighted loss, statistical variance is high.</li>
-                <li><b>Confidence vs Probability</b>: Softmax scores represent the model's mathematical score relative to training distributions, <b>not</b> clinical probability of disease.</li>
-                <li><b>Grad-CAM Saliency Limits</b>: Heatmaps reflect mathematical gradient activations, which can be influenced by scan contrast, skull edges, or dataset artifacts.</li>
-            </ol>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<hr style='border: none; border-top: 1px solid rgba(51, 65, 85, 0.5); margin: 1.5rem 0;'>", unsafe_allow_html=True)
-    st.markdown("<div style='font-size: 0.75rem; color: #64748b; text-align: center;'>NeuroScan AI &bull; CSE Final Year College Project &bull; Phase 6 Prototype UI</div>", unsafe_allow_html=True)
