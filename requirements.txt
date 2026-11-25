@@ -1,0 +1,31 @@
+# =============================================================================
+# NeuroScan AI — Project Dependency Manifest
+# =============================================================================
+# Python Target Environments:
+# - Primary CUDA Environment: Python 3.10.19 (Conda: tgpu)
+# - Secondary Evaluator Environment: Python 3.13.5 (Conda: base)
+# =============================================================================
+
+# --- 1. Core Application & UI ---
+streamlit>=1.40.0,<=1.51.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+pillow>=10.0.0
+matplotlib>=3.8.0
+pandas>=2.0.0
+
+# --- 2. Deep Learning Vision Engine ---
+# Note: In CUDA environments (like tgpu), PyTorch must match CUDA runtime (e.g. cu121/cu130)
+torch>=2.0.0
+torchvision>=0.15.0
+numpy>=1.24.0
+
+# --- 3. Retrieval-Augmented Generation (RAG) ---
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+
+# --- 4. Multi-Stage Reasoning Workflow ---
+langgraph>=0.2.0
+
+# --- 5. Quality Assurance & Testing ---
+pytest>=7.0.0

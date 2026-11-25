@@ -16,6 +16,8 @@ except ImportError:
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
 DATA_DIR = PROJECT_ROOT / "data"
+KNOWLEDGE_BASE_DIR = DATA_DIR / "knowledge_base"
+CHROMA_DB_DIR = ARTIFACTS_DIR / "chroma_db"
 
 # Verified 4-class taxonomy from Phases 1-4
 CLASS_NAMES = [
@@ -37,3 +39,4 @@ CLASS_DESCRIPTIONS = {
 DEFAULT_LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower()
 DEFAULT_GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
 GEMINI_MODEL = DEFAULT_GEMINI_MODEL
+DEFAULT_EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
