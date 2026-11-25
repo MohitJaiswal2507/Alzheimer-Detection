@@ -32,6 +32,15 @@ from src.neuroscan.explainability.gradcam import (
     create_gradcam_figure,
 )
 from src.neuroscan.llm.explainer import explain_result
+from src.neuroscan.rag import (
+    ask_knowledge_assistant,
+    get_dependency_status,
+    is_vector_store_available,
+)
+from src.neuroscan.workflow import (
+    run_neuroscan_workflow,
+    is_langgraph_available,
+)
 
 # -----------------------------------------------------------------------------
 # Streamlit App Configuration
@@ -269,6 +278,34 @@ st.markdown("""
         border-radius: 9999px;
         transition: width 0.6s cubic-bezier(0.32, 0.72, 0, 1);
     }
+
+    /* Markdown Tables in Chat */
+    div[data-testid="stChatMessage"] table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0.9rem 0;
+        font-size: 0.86rem;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(51, 65, 85, 0.7);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    div[data-testid="stChatMessage"] th {
+        background: rgba(30, 41, 59, 0.9);
+        color: #38bdf8;
+        font-weight: 700;
+        padding: 8px 12px;
+        border-bottom: 1px solid rgba(51, 65, 85, 0.8);
+        text-align: left;
+    }
+    div[data-testid="stChatMessage"] td {
+        padding: 8px 12px;
+        border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+        color: #cbd5e1;
+    }
+    div[data-testid="stChatMessage"] tr:last-child td {
+        border-bottom: none;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -342,7 +379,7 @@ with st.sidebar:
 
     page = st.radio(
         "Navigation",
-        options=["📊 Dashboard", "🔬 MRI Analysis", "ℹ️ About Project"],
+        options=["📊 Dashboard", "🔬 MRI Analysis", "💡 Knowledge Assistant", "ℹ️ About Project"],
         index=1,  # Default to MRI Analysis for seamless demo
     )
 
@@ -895,7 +932,189 @@ elif page == "🔬 MRI Analysis":
 
 
 # =============================================================================
-# PAGE 3: ABOUT PROJECT & SAFETY
+# PAGE 3: KNOWLEDGE ASSISTANT (PHASE 7 RAG)
+# =============================================================================
+elif page == "💡 Knowledge Assistant":
+    st.markdown("""
+    <div style="margin-bottom: 1.5rem;">
+        <div class="badge-eyebrow"><span class="pulse-dot"></span> NEUROSCAN AI &bull; RAG KNOWLEDGE ASSISTANT</div>
+        <h1 style="font-size: 2.3rem; font-weight: 800; color: #f8fafc; letter-spacing: -0.02em; margin: 0 0 0.4rem 0;">
+            Educational <span style="background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Knowledge Assistant</span>
+        </h1>
+        <p style="font-size: 0.98rem; color: #94a3b8; margin: 0; max-width: 850px;">
+            Ask questions about Alzheimer's pathology, dementia stages, 2D brain MRI slices, EfficientNet-B0, or Grad-CAM explainability.
+            Answers are grounded in curated educational sources with transparent citations.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Initialize RAG session state
+    if "rag_messages" not in st.session_state:
+        st.session_state["rag_messages"] = [
+            {
+                "role": "assistant",
+                "content": (
+                    "Hello! I am the NeuroScan AI Educational Knowledge Assistant. "
+                    "You can ask me questions about Alzheimer's disease pathology, clinical dementia stages vs. "
+                    "our dataset categories, 2D axial MRI physics, the EfficientNet-B0 transfer learning architecture, "
+                    "or Grad-CAM explainability. How can I help you today?"
+                ),
+                "sources": [
+                    {
+                        "title": "Alzheimer's Disease Overview and Neuropathology",
+                        "publisher": "National Institute on Aging (NIA) / Mayo Clinic",
+                        "source_url": "https://www.nia.nih.gov/health/alzheimers-and-dementia/what-is-alzheimers-disease",
+                        "access_date": "2026-10-29",
+                        "category": "General Medical Education",
+                    }
+                ],
+                "status": "intro",
+            }
+        ]
+
+    # Controls row: Language, Retrieval Diagnostics, Clear Button
+    rag_ctrl1, rag_ctrl2, rag_ctrl3 = st.columns([2, 2, 1], gap="medium")
+
+    with rag_ctrl1:
+        rag_lang_choice = st.selectbox(
+            "Response Language",
+            options=["English", "Hindi / Hinglish"],
+            index=0,
+            key="rag_language_select",
+        )
+        rag_lang_code = "hinglish" if "Hinglish" in rag_lang_choice else "english"
+
+    with rag_ctrl2:
+        dep_status = get_dependency_status()
+        lg_available = is_langgraph_available()
+        workflow_tag = "LangGraph Workflow" if lg_available else "NeuroScan Workflow"
+        vector_tag = "Dense ChromaDB" if dep_status["ready"] else "Knowledge Base"
+
+        st.markdown(f"""
+        <div style="padding-top: 1.6rem; font-size: 0.78rem; display: flex; gap: 6px; flex-wrap: wrap;">
+            <span class="badge-live">🟢 {workflow_tag}</span>
+            <span class="badge-live" style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; border-color: rgba(56, 189, 248, 0.25);">📚 {vector_tag}</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with rag_ctrl3:
+        st.markdown("<div style='height: 1.7rem;'></div>", unsafe_allow_html=True)
+        if st.button("🗑️ Clear Chat", use_container_width=True, help="Clear chat history"):
+            st.session_state["rag_messages"] = []
+            st.rerun()
+
+    # Suggested Prompts Row
+    st.markdown("<div style='font-size: 0.78rem; font-weight: 700; color: #64748b; letter-spacing: 0.08em; text-transform: uppercase; margin: 0.8rem 0 0.4rem 0;'>SUGGESTED EDUCATIONAL QUESTIONS</div>", unsafe_allow_html=True)
+    q1, q2, q3, q4 = st.columns(4)
+
+    prompt_to_run = None
+    with q1:
+        if st.button("🧠 What is Alzheimer's?", use_container_width=True):
+            prompt_to_run = "What is Alzheimer's disease and what are its biological hallmarks?"
+    with q2:
+        if st.button("📊 4 Dataset Categories?", use_container_width=True):
+            prompt_to_run = "What are the four dataset categories used in this project and how do they differ from clinical diagnosis?"
+    with q3:
+        if st.button("🔬 What is an Axial Slice?", use_container_width=True):
+            prompt_to_run = "What is an axial MRI slice, and what are the limitations of analyzing 2D slices instead of 3D volume?"
+    with q4:
+        if st.button("🔍 How does Grad-CAM work?", use_container_width=True):
+            prompt_to_run = "How does Grad-CAM work in this model, and why is it not a clinical lesion map?"
+
+    st.markdown("<hr style='border: none; border-top: 1px solid rgba(51, 65, 85, 0.5); margin: 1rem 0;'>", unsafe_allow_html=True)
+
+    # Render Chat History
+    for msg in st.session_state["rag_messages"]:
+        if msg["role"] == "user":
+            with st.chat_message("user"):
+                st.write(msg["content"])
+        else:
+            with st.chat_message("assistant"):
+                msg_status = msg.get("status", "success")
+                if msg_status == "success":
+                    st.markdown("<div style='margin-bottom: 0.5rem;'><span class='badge-live'>🟢 Live LLM Response (Google Gemini)</span></div>", unsafe_allow_html=True)
+                elif msg_status == "fallback":
+                    st.markdown("<div style='margin-bottom: 0.5rem;'><span class='badge-fallback'>🛡️ Local Knowledge Base Mode</span></div>", unsafe_allow_html=True)
+                elif msg_status == "disclaimer":
+                    st.markdown("<div style='margin-bottom: 0.5rem;'><span class='badge-fallback' style='background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.3);'>⚠️ Medical Disclaimer</span></div>", unsafe_allow_html=True)
+
+                st.markdown(msg["content"])
+
+                # Render sources if available
+                sources = msg.get("sources", [])
+                if sources:
+                    with st.expander(f"📚 Retrieved Source References ({len(sources)})", expanded=False):
+                        for s_idx, src in enumerate(sources, 1):
+                            s_title = src.get("title", "Reference")
+                            s_pub = src.get("publisher", "NeuroScan AI")
+                            s_url = src.get("source_url", "")
+                            s_cat = src.get("category", "General")
+                            s_date = src.get("access_date", "2026-10-29")
+
+                            url_link = f"[{s_url}]({s_url})" if s_url else "Local Document"
+                            st.markdown(
+                                f"**{s_idx}. {s_title}**  \n"
+                                f"&bull; **Publisher**: {s_pub} | **Category**: `{s_cat}`  \n"
+                                f"&bull; **Source Link**: {url_link} | **Accessed**: {s_date}"
+                            )
+
+    # Chat Input Box
+    user_input = st.chat_input("Ask an educational question about Alzheimer's, MRI, EfficientNet, or Grad-CAM...")
+
+    active_prompt = prompt_to_run or user_input
+    if active_prompt:
+        # Add user query to conversation
+        st.session_state["rag_messages"].append({"role": "user", "content": active_prompt})
+
+        with st.chat_message("assistant"):
+            with st.spinner("Executing educational workflow and generating grounded response..."):
+                workflow_result = run_neuroscan_workflow(active_prompt, language=rag_lang_code)
+
+            if workflow_result.get("safety_status") == "medical_advice_intercepted":
+                res_status = "disclaimer"
+            elif "fallback" in workflow_result.get("response_source", "") or workflow_result.get("safety_status") == "out_of_scope":
+                res_status = "fallback"
+            else:
+                res_status = "success"
+
+            if res_status == "success":
+                st.markdown("<div style='margin-bottom: 0.5rem;'><span class='badge-live'>🟢 Live LLM Response (Google Gemini)</span></div>", unsafe_allow_html=True)
+            elif res_status == "fallback":
+                st.markdown("<div style='margin-bottom: 0.5rem;'><span class='badge-fallback'>🛡️ Local Knowledge Base Mode</span></div>", unsafe_allow_html=True)
+            elif res_status == "disclaimer":
+                st.markdown("<div style='margin-bottom: 0.5rem;'><span class='badge-fallback' style='background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.3);'>⚠️ Medical Disclaimer</span></div>", unsafe_allow_html=True)
+
+            st.markdown(workflow_result["answer"])
+
+            # Render sources
+            sources = workflow_result.get("sources", [])
+            if sources:
+                with st.expander(f"📚 Retrieved Source References ({len(sources)})", expanded=True):
+                    for s_idx, src in enumerate(sources, 1):
+                        s_title = src.get("title", "Reference")
+                        s_pub = src.get("publisher", "NeuroScan AI")
+                        s_url = src.get("source_url", "")
+                        s_cat = src.get("category", "General")
+                        s_date = src.get("access_date", "2026-10-29")
+                        url_link = f"[{s_url}]({s_url})" if s_url else "Local Document"
+                        st.markdown(
+                            f"**{s_idx}. {s_title}**  \n"
+                            f"&bull; **Publisher**: {s_pub} | **Category**: `{s_cat}`  \n"
+                            f"&bull; **Source Link**: {url_link} | **Accessed**: {s_date}"
+                        )
+
+        # Store in session state and rerun
+        st.session_state["rag_messages"].append({
+            "role": "assistant",
+            "content": workflow_result["answer"],
+            "sources": sources,
+            "status": res_status,
+        })
+        st.rerun()
+
+
+# =============================================================================
+# PAGE 4: ABOUT PROJECT & SAFETY
 # =============================================================================
 elif page == "ℹ️ About Project":
     st.markdown("""

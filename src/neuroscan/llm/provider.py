@@ -1,9 +1,11 @@
 """
 NeuroScan AI — LLM Provider Client
 Handles communication with the configured Google Gemini API via HTTP requests.
+Includes retry logic with backoff for transient 503/429 errors and fast timeout handling.
 Never transmits MRI images or personal health data.
 """
 import os
+import time
 import requests
 from ..config import DEFAULT_LLM_PROVIDER, DEFAULT_GEMINI_MODEL
 
@@ -12,7 +14,7 @@ def call_llm(
     prompt: str,
     system_prompt: str = "",
     provider: str = DEFAULT_LLM_PROVIDER,
-    timeout: int = 35,
+    timeout: int = 15,
 ) -> str:
     """
     Sends a text-only prompt to the configured LLM provider and returns the generated text.
@@ -21,7 +23,7 @@ def call_llm(
         prompt: The user-level instructional text containing structured classifier results.
         system_prompt: Optional system-level instructions or role constraints.
         provider: Provider name (defaults to "gemini").
-        timeout: Request timeout in seconds.
+        timeout: Request timeout in seconds (default: 15s for responsive UX).
 
     Returns:
         The generated explanation string.
@@ -42,7 +44,7 @@ def call_llm(
 
 
 def _call_gemini(prompt: str, system_prompt: str, timeout: int) -> str:
-    """Calls Google Gemini generateContent REST endpoint using requests."""
+    """Calls Google Gemini generateContent REST endpoint using requests with backoff."""
     api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     if not api_key or not api_key.strip():
         raise ValueError(
@@ -70,7 +72,7 @@ def _call_gemini(prompt: str, system_prompt: str, timeout: int) -> str:
         ],
         "generationConfig": {
             "temperature": 0.2,
-            "maxOutputTokens": 800,
+            "maxOutputTokens": 1000,
         },
     }
 
@@ -79,17 +81,32 @@ def _call_gemini(prompt: str, system_prompt: str, timeout: int) -> str:
         "x-goog-api-key": api_key.strip(),
     }
 
-    try:
-        response = requests.post(url, headers=headers, json=payload, timeout=timeout)
-    except requests.exceptions.Timeout:
-        raise RuntimeError(f"Gemini API request timed out after {timeout} seconds.")
-    except requests.exceptions.RequestException as e:
-        raise RuntimeError(f"Network error communicating with Gemini API: {e}")
+    # Execute request with single retry and exponential backoff on transient errors (503, 429)
+    max_retries = 1
+    response = None
 
-    if response.status_code != 200:
-        raise RuntimeError(
-            f"Gemini API error (HTTP {response.status_code}): {response.text}"
-        )
+    for attempt in range(max_retries + 1):
+        try:
+            response = requests.post(url, headers=headers, json=payload, timeout=timeout)
+            if response.status_code == 200:
+                break
+            elif response.status_code in (503, 429) and attempt < max_retries:
+                time.sleep(1.0)
+                continue
+            else:
+                raise RuntimeError(
+                    f"Gemini API error (HTTP {response.status_code}): {response.text}"
+                )
+        except requests.exceptions.Timeout:
+            if attempt < max_retries:
+                time.sleep(0.5)
+                continue
+            raise RuntimeError(f"Gemini API request timed out after {timeout} seconds.")
+        except requests.exceptions.RequestException as e:
+            if attempt < max_retries:
+                time.sleep(0.5)
+                continue
+            raise RuntimeError(f"Network error communicating with Gemini API: {e}")
 
     try:
         data = response.json()
