@@ -82,11 +82,22 @@ def build_rag_system_prompt(language: str = "english") -> str:
 def build_rag_user_prompt(
     query: str,
     retrieved_chunks: List[Dict[str, Any]],
-    language: str = "english"
+    language: str = "english",
+    classifier_context: Optional[Dict[str, Any]] = None,
 ) -> str:
-    """Builds the user prompt packaging retrieved context and question."""
+    """Builds the user prompt packaging retrieved context, optional scan severity context, and question."""
     lang_lower = language.lower().strip()
     is_hinglish = lang_lower in ["hindi", "hinglish"]
+
+    scan_ctx_str = ""
+    if classifier_context and classifier_context.get("predicted_class"):
+        pred_cls = str(classifier_context["predicted_class"]).replace("_", " ")
+        conf_pct = float(classifier_context.get("confidence", 0.0)) * 100
+        scan_ctx_str = (
+            f"\nACTIVE MRI SCAN CONTEXT (Educational Classifier Output Only):\n"
+            f"- Predicted Category: {pred_cls} ({conf_pct:.1f}% softmax score)\n"
+            f"- Focus on practical health education, typical symptoms, daily support, and doctor next steps relevant to this stage—avoid unnecessary technical ML jargon unless asked.\n"
+        )
 
     if not retrieved_chunks:
         context_str = "(No relevant educational documents found in the local knowledge base.)"
@@ -107,7 +118,7 @@ def build_rag_user_prompt(
         return f"""<retrieved_context>
 {context_str}
 </retrieved_context>
-
+{scan_ctx_str}
 USER QUESTION:
 {query}
 
@@ -118,7 +129,7 @@ Raw text ya chunk markers ko copy na karein."""
         return f"""<retrieved_context>
 {context_str}
 </retrieved_context>
-
+{scan_ctx_str}
 USER QUESTION:
 {query}
 
@@ -485,11 +496,99 @@ Below is the verified educational summary synthesized from the NeuroScan AI loca
 *Educational Disclaimer: Synthesized directly from local academic documentation. Not intended for individual clinical evaluations.*"""
 
 
+def _build_patient_care_fallback(
+    query: str,
+    is_hinglish: bool,
+    classifier_context: Optional[Dict[str, Any]] = None,
+) -> str:
+    """Synthesizes a client-focused, severity-aware health & symptom educational summary."""
+    pred_raw = (classifier_context or {}).get("predicted_class", "")
+    pred_clean = pred_raw.replace("_", " ") if pred_raw else "Alzheimer's / Cognitive Decline"
+
+    stage_notes_en = {
+        "Non_Demented": (
+            "- **Baseline Context:** Scans in the `Non_Demented` category show no structural dementia patterns in this collection.\n"
+            "- **What to Watch For:** Occasional forgetfulness (misplacing keys, briefly forgetting a name) is normal aging, whereas persistent confusion or repeating recent questions warrants a checkup."
+        ),
+        "Very_Mild_Demented": (
+            "- **Early / Subtle Signs:** Often resembles very mild cognitive changes—misplacing everyday items, repeating recent questions, or mild difficulty organizing complex plans while staying mostly independent.\n"
+            "- **Monitoring:** Keeping a simple log of memory lapses and sleep changes helps a physician track patterns over time."
+        ),
+        "Mild_Demented": (
+            "- **Common Mild-Stage Symptoms:** Noticeable trouble recalling recent conversations, managing bills or schedules, finding familiar words, or navigating less-familiar routes.\n"
+            "- **Daily Support:** Using calendars, pill organizers, and consistent daily routines helps preserve independence."
+        ),
+        "Moderate_Demented": (
+            "- **Common Moderate-Stage Symptoms:** Greater confusion about time or place, difficulty recognizing familiar faces or places, needing hands-on help with dressing/grooming, and occasional evening restlessness (sundowning).\n"
+            "- **Caregiver & Home Safety:** Keep routines predictable, improve hallway lighting, remove trip hazards, and communicate in calm, short sentences without arguing."
+        ),
+    }
+
+    stage_notes_hi = {
+        "Non_Demented": (
+            "- **Baseline Context:** `Non_Demented` category mein structural dementia indicators nahi dikhte.\n"
+            "- **Dhyan Dene Wali Baatein:** Kabhi-kabhi chabi bhoolna normal aging hai, lekin lagatar confusion ya baar-baar ek hi sawal puchna doctor ko dikhane layak sanket hai."
+        ),
+        "Very_Mild_Demented": (
+            "- **Shuruati / Subtle Lakshan:** Cheezein rakh kar bhoolna, recent baatein dohrana, ya complex plans manage karne mein halki dikkat—halanki daily kaam khud ho jaate hain.\n"
+            "- **Monitoring:** Memory changes ka ek simple note rakhna neurologist ke checkup mein madad karta hai."
+        ),
+        "Mild_Demented": (
+            "- **Mild Stage Ke Aam Lakshan:** Recent conversations bhoolna, bills ya schedule manage karne mein dikkat, shabd dhoondhne mein pareshani, ya raaste bhoolna.\n"
+            "- **Daily Support:** Pill organizers, calendars, aur fixed daily routine se independence bani rehti hai."
+        ),
+        "Moderate_Demented": (
+            "- **Moderate Stage Ke Aam Lakshan:** Samay aur jagah ka confusion badhna, kareebi logon ko pehchanne mein dikkat, kapde pehnne/daily care mein madad ki zaroorat, aur shaam ke waqt bechaini (sundowning).\n"
+            "- **Ghar Par Suraksha & Care:** Fixed routine rakhein, ghar mein achhi lighting aur safe walkways rakhein, aur shant, chhote sentences mein baat karein."
+        ),
+    }
+
+    if is_hinglish:
+        stage_block = stage_notes_hi.get(pred_raw, stage_notes_hi["Mild_Demented"])
+        return f"""### {pred_clean}: Health Context, Symptoms & Next Steps
+
+**1. Scan Category Ke Anusar Samajh ({pred_clean})**:
+{stage_block}
+
+**2. Brain Health Aur Lifestyle Habits**:
+- **Regular Exercise:** Rozana brisk walking (lagbhag 30 min) brain blood flow ko support karta hai.
+- **Nutrition & Sleep:** Leafy greens, berries, nuts, olive oil (MIND/Mediterranean diet) aur 7–8 ghante ki achhi neend dimag ki sehat ke liye zaroori hai.
+- **Social & Mental Activity:** Reading, puzzles, aur parivar ke saath active conversation cognitive reserve ko majboot rakhta hai.
+
+**3. Neurologist Se Kya Puchein (Recommended Next Steps)**:
+1. Kya **MMSE ya MoCA** jaise standardized memory/cognitive screening tests ki zaroorat hai?
+2. Kya **Vitamin B12, Thyroid (TSH), ya metabolic blood tests** se koi reversible cause check kiya ja sakta hai?
+3. Kya full clinical **3D volumetric MRI** aur medical history review ki zaroorat hai?
+
+---
+*Educational Notice: Yeh jankari sirf health education ke liye hai aur medical diagnosis nahi hai. Sahi evaluation aur treatment plan ke liye qualified neurologist se zaroor milein.*"""
+    else:
+        stage_block = stage_notes_en.get(pred_raw, stage_notes_en["Mild_Demented"])
+        return f"""### {pred_clean}: Symptoms, Daily Support & Medical Next Steps
+
+**1. Symptom & Daily-Life Context ({pred_clean})**:
+{stage_block}
+
+**2. Evidence-Based Brain Health & Care Steps**:
+- **Consistent Routines & Home Safety:** Predictable meal/sleep schedules, pill organizers, clear labels, and well-lit walkways reduce daily stress and confusion.
+- **Healthy Lifestyle:** Regular aerobic activity (e.g., brisk walking), 7–8 hours of quality sleep, blood-pressure control, and a Mediterranean/MIND diet support brain health.
+- **Calm Communication:** Use short, clear sentences, maintain eye contact, and offer reassurance rather than correcting forgotten details.
+
+**3. Practical Questions to Ask a Neurologist**:
+1. Should we complete a standardized cognitive screening test (such as **MMSE** or **MoCA**)?
+2. Should we run blood tests (e.g., **Vitamin B12**, **thyroid TSH**, metabolic panel) to rule out reversible causes of memory changes?
+3. Is a full **3D clinical MRI** and comprehensive neurological history recommended?
+
+---
+*Educational Notice: This summary is for educational guidance only and is not a medical diagnosis. Please consult a qualified physician or neurologist for personal medical evaluation.*"""
+
+
 def generate_fallback_answer(
     query: str,
     retrieved_chunks: List[Dict[str, Any]],
     language: str = "english",
-    reason: str = ""
+    reason: str = "",
+    classifier_context: Optional[Dict[str, Any]] = None,
 ) -> str:
     """
     Synthesizes a polished, readable, topic-aware educational answer directly from
@@ -522,8 +621,18 @@ def generate_fallback_answer(
 
     q_lower = query.lower()
 
+    # Topic H (Priority for client health/symptom/care questions): Patient symptoms, daily care, lifestyle, normal aging, neurologist next steps
+    if any(k in q_lower for k in [
+        "symptom", "caregiver", "daily care", "safe", "lifestyle", "brain health",
+        "normal aging", "neurologist", "checkup", "next step", "monitor",
+        "early", "prevent", "support", "loved one", "what should", "what to do", "memory",
+        "non-demented scan", "2d mri not replace",
+    ]):
+        body = _build_patient_care_fallback(query, is_hinglish, classifier_context=classifier_context)
+        return f"{header_notice}\n\n{body}"
+
     # Topic A: Alzheimer's disease overview & hallmarks
-    if any(k in q_lower for k in ["what is alzheimer", "alzheimer's disease", "amyloid", "tau", "plaques", "hallmark", "pathology"]):
+    if any(k in q_lower for k in ["what is alzheimer", "amyloid", "tau", "plaques", "hallmark", "pathology"]):
         body = _build_alzheimers_fallback(is_hinglish)
         return f"{header_notice}\n\n{body}"
 
@@ -572,6 +681,7 @@ def generate_rag_answer(
     language: str = "english",
     timeout: int = 15,
     use_fallback_on_error: bool = True,
+    classifier_context: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Coordinates RAG prompt construction, queries the Gemini provider, and formats citations.
@@ -632,7 +742,12 @@ def generate_rag_answer(
         }
 
     system_prompt = build_rag_system_prompt(language=language)
-    user_prompt = build_rag_user_prompt(clean_query, retrieved_chunks, language=language)
+    user_prompt = build_rag_user_prompt(
+        clean_query,
+        retrieved_chunks,
+        language=language,
+        classifier_context=classifier_context,
+    )
 
     status = "success"
     error_msg = None
@@ -655,6 +770,7 @@ def generate_rag_answer(
             retrieved_chunks,
             language=language,
             reason=error_msg,
+            classifier_context=classifier_context,
         )
 
     sources = format_source_citations(retrieved_chunks)

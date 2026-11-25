@@ -28,11 +28,13 @@ LIMITATION_PATTERNS = [
     r"\b(data leakage|patient-level|patient leakage|imbalance|minority class|limitations?|2d vs 3d|confidence vs probability)\b",
 ]
 
-# Educational query patterns
+# Educational query patterns (clinical/patient education + technical concepts)
 EDUCATIONAL_PATTERNS = [
     r"\b(what is alzheimer|alzheimer'?s|dementia|amyloid|tau|plaque|hippocampus|ventricle|brain mri|axial|t1|t2)\b",
     r"\b(efficientnet|compound scaling|mbconv|transfer learning|dataset categories|four categories|4 categories)\b",
     r"\b(mild_demented|moderate_demented|non_demented|very_mild_demented)\b",
+    r"\b(symptoms?|caregiver|daily care|home safe|safety|lifestyle|brain health|normal aging|memory loss|memory)\b",
+    r"\b(cognitive decline|neurologist|checkup|next steps?|monitor|early signs?|prevent|support|loved one|what should|what to do)\b",
 ]
 
 

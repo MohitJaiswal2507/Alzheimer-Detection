@@ -214,12 +214,13 @@ def generation_node(state: NeuroScanState) -> NeuroScanState:
             "workflow_steps": steps,
         }
 
-    # 4. Standard Educational / Grad-CAM / Limitations query -> Use RAG Generator
+    # 4. Standard Educational / Grad-CAM / Limitations / Patient Care query -> Use RAG Generator
     rag_res = generate_rag_answer(
         query=query,
         retrieved_chunks=state.get("retrieved_documents", []),
         language=language,
         use_fallback_on_error=True,
+        classifier_context=state.get("classifier_context"),
     )
 
     return {
